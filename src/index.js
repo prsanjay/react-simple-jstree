@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import 'jstree/dist/jstree.min';
@@ -20,28 +21,18 @@ class TreeView extends Component {
   }
 
   componentDidMount() {
-    const { treeData } = this.props;
-    if (treeData) {
-      $(this.treeContainer).jstree(treeData);
-      $(this.treeContainer).on('changed.jstree', (e, data) => {
-        this.props.onChange(e, data);
-      });
-    }
-  }
-
-  componentDidUpdate() {
-    const { treeData } = this.props;
-    if (treeData) {
-      $(this.treeContainer).jstree(true).settings = treeData;
-      $(this.treeContainer).jstree(true).refresh();
-
-    }
+    $(ReactDOM.findDOMNode(this))
+      .on('changed.jstree', (e, data) => {
+        if (this.props.onChanged) {
+          this.props.onChanged(data.selected.map(
+            item => data.instance.get_node(item)
+          ));
+        }
+      }).jstree(treeData);
   }
 
   render() {
-    return (
-      <div ref={div => this.treeContainer = div} />
-    );
+    return (<div></div>);
   }
 }
 
